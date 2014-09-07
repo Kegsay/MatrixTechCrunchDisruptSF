@@ -92,7 +92,8 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    View rowView = inflater.inflate(R.layout.list_cell, parent, false);
 	    final TextView textView = (TextView) rowView.findViewById(R.id.textCell);
 	    final ImageView imageView = (ImageView) rowView.findViewById(R.id.imageCell);
-	    
+	    textView.setBackgroundResource(R.drawable.chat_bubble_left);
+	    imageView.setBackgroundResource(R.drawable.chat_bubble_left);
 	    final Event e = getItem(position);
 	    
 	    if ("org.matrix.demo.models.unity.stickman".equals(e.type)) {
@@ -100,6 +101,7 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    		LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
 	    		lp.gravity = Gravity.RIGHT;
 	    		imageView.setLayoutParams(lp);
+	    		imageView.setBackgroundResource(R.drawable.chat_bubble_right);
 	    	}
 	    	final String thumbnail = e.content.optString("thumbnail");
 	    	Bitmap bm = sCache.get(thumbnail);
@@ -144,6 +146,7 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    		LayoutParams lp = (LayoutParams) textView.getLayoutParams();
 	    		lp.gravity = Gravity.RIGHT;
 	    		textView.setLayoutParams(lp);
+	    		textView.setBackgroundResource(R.drawable.chat_bubble_right);
 	    	}
 	    	textView.setText(e.content.optString("body"));
 	    }
