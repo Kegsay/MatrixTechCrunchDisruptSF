@@ -7,17 +7,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.matrix.techcrunch.MainActivity" >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+    
+    <Button
+        android:id="@+id/sendMessage"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentBottom="true"
+        android:text="Send" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/sendMessage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
     </FrameLayout>
