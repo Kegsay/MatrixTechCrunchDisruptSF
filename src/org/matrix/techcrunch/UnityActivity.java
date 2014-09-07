@@ -1,5 +1,6 @@
 package org.matrix.techcrunch;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.matrix.techcrunch.matrix.EventStream;
 import org.matrix.techcrunch.matrix.EventStreamCallback;
 import org.matrix.techcrunch.matrix.MatrixClient;
 import org.matrix.techcrunch.matrix.SendEventCallback;
+import org.matrix.techcrunch.matrix.UploadCallback;
 
 import com.unity3d.player.UnityPlayer;
 
@@ -164,8 +166,7 @@ public class UnityActivity extends NativeActivity {
 
 					@Override
 					public void onResponse(int code, String response) {
-						// TODO Auto-generated method stub
-						
+						Log.d(TAG, "onResponse "+code+" "+response);
 					}
 
 					@Override
@@ -193,7 +194,53 @@ public class UnityActivity extends NativeActivity {
 	
 	// Called by unity
 	public void onReceiveUnityJson(String json) {
+		Log.d(TAG, "onReceiveUnityJson "+json);
+		// upload the image
+		try {
+			final JSONObject j = new JSONObject(json);
+			mClient.doUpload(new FileInputStream(j.optString("thumbnail")), "image/png", new UploadCallback() {
+
+				@Override
+				public void onFinished(String url) {
+					try {
+						j.putOpt("thumbnail", url);
+						sendUnityJson(j);
+					}
+					catch (JSONException e) {
+						Log.e(TAG, "I hate my life: "+e);
+					}
+				}
+
+				@Override
+				public void onException(Exception e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 		
+			
+		}
+		catch (Exception e) {
+			Log.e(TAG, "Wrrry: "+e);
+		}
+	}
+	
+	private void sendUnityJson(JSONObject json) {
+		mClient.sendContent(mRoomId, "org.matrix.demo.models.unity.stickman", json, new SendEventCallback() {
+
+			@Override
+			public void onResponse(int code, String response) {
+				Log.d(TAG, "onResponse "+code+" "+response);
+			}
+
+			@Override
+			public void onException(Exception e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 
 	// Quit Unity
