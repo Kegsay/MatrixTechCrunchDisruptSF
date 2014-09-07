@@ -72,7 +72,7 @@ public class UnityActivity extends NativeActivity {
 			@Override
 			public void onClick(View v) {
 				Log.i("AndroidTC", "Requesting unity event...");
-				UnityPlayer.UnitySendMessage("gameEventMaker", "getEvent", "someArg");
+				UnityPlayer.UnitySendMessage("Robot", "getState", null);
 			}
 			
 		});
@@ -154,6 +154,11 @@ public class UnityActivity extends NativeActivity {
 		if (mAdapter != null) {
 			mAdapter.add(event);
 		}
+	}
+	
+	// Called by unity
+	public void onReceiveUnityJson(String json) {
+		
 	}
 
 	// Quit Unity
