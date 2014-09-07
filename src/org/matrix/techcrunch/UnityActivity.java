@@ -42,7 +42,8 @@ public class UnityActivity extends NativeActivity {
 	private Handler mHandler;
 	private ListAdapter mAdapter;
 	private MatrixClient mClient;
-	public static final String USER_ID = "@tc:matrix.org";
+	public static String USER_ID = "@tc:matrix.org";
+	public static String TOKEN = "QHRjOm1hdHJpeC5vcmc..enDGPyJfutxYykiszs";
 	private String mRoomId = "!uiOIVeMtHcBRRjzyhh:matrix.org";
 	
 	// list of all events
@@ -67,7 +68,11 @@ public class UnityActivity extends NativeActivity {
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-
+		if (android.os.Build.MODEL.equals("GT-I9505")) {
+			Log.e(TAG, "Being player 2");
+			USER_ID = "@tc2:matrix.org";
+			TOKEN = "QHRjMjptYXRyaXgub3Jn.SsYFvPldnMrCoGyBka";
+		}
 		mHandler = new Handler();
 		getWindow().takeSurface(null);
 		getWindow().setFormat(PixelFormat.RGB_565);
@@ -78,9 +83,8 @@ public class UnityActivity extends NativeActivity {
 		loadList();
 		
 		String host = "http://matrix.org";
-		String access_token = "QHRjOm1hdHJpeC5vcmc..enDGPyJfutxYykiszs";
-		mClient = new MatrixClient(host, access_token);
-		EventStream stream = new EventStream(host, access_token, mCallback);
+		mClient = new MatrixClient(host, TOKEN);
+		EventStream stream = new EventStream(host, TOKEN, mCallback);
 		stream.start_stream();
 	}
 	
@@ -135,6 +139,10 @@ public class UnityActivity extends NativeActivity {
 			public void run() {
 				mAdapter.add(event);
 				mAdapter.notifyDataSetChanged();
+				ListView list = (ListView)findViewById(R.id.listView);
+				if (list != null) {
+					list.setSelection(list.getCount()-1);
+				}
 			}
 			
 		});
