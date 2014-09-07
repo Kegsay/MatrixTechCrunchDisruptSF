@@ -1,0 +1,14 @@
+requires a config file which looks like:
+key=value
+key=value
+
+Required keys: 
+unity-temp   :  Path to the autogenned android unity files in Temp/StagingArea
+android      :  Path to the android project (..)
+unity-lib    :  Path to the unity android library in Contents/PlaybackEngines/AndroidPlayer
+
+
+Then run ./u2a.py and it will dump the stuff from unity into the assets dir of the android project.
+It will also check to make sure you have the classes for things like UnityPlayer by inspecting the
+classpath of the android project. If it whines at you, then add External JAR and select classes.jar
+located in unity >>> Contents/PlaybackEngines/AndroidPlayer/development/bin/classes.jar
