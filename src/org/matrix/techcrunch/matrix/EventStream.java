@@ -42,7 +42,7 @@ public class EventStream {
 	
 	private void doInitialSync() throws IOException, JSONException {
 		String str_url = host + MatrixUrls.PREFIX + "/initialSync" + "?access_token=" + access_token;
-		
+		Log.i("ES", "Initial sync to "+str_url);
 		URL url = new URL(str_url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		

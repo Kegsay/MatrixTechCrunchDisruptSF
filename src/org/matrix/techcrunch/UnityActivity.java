@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.matrix.techcrunch.matrix.Event;
+import org.matrix.techcrunch.matrix.EventStream;
+import org.matrix.techcrunch.matrix.EventStreamCallback;
 
 import com.unity3d.player.UnityPlayer;
 
@@ -38,12 +41,12 @@ public class UnityActivity extends NativeActivity {
 	// list of all events
 	private List<UnityEvent> mEvents = new ArrayList<UnityEvent>();
 	
-	private Runnable mAddEventLoop = new Runnable() {
+	private EventStreamCallback mCallback = new EventStreamCallback() {
 
 		@Override
-		public void run() {
-			addEvent(new UnityEvent("{\"thumbnail\":\"http://9pixs.com/wp-content/uploads/2014/06/dog-pics_1404159465.jpg\"}"));
-			mHandler.postDelayed(this, 5000);
+		public void onEvent(Event event) {
+			Log.i(TAG, "onEvent "+event);
+			addEvent(new UnityEvent(event.content.toString()));
 		}
 		
 	};
@@ -61,8 +64,10 @@ public class UnityActivity extends NativeActivity {
 		loadUnity();
 		loadList();
 		
-		// TODO listen on /events and dump the json into mEvents then call mAdapter.notifyDatasetChanged()
-		mHandler.postDelayed(mAddEventLoop, 2000);
+		String host = "http://matrix.org";
+		String access_token = "QHRjOm1hdHJpeC5vcmc..enDGPyJfutxYykiszs";
+		EventStream stream = new EventStream(host, access_token, mCallback);
+		stream.start_stream();
 	}
 	
 	public void showUnity() {
