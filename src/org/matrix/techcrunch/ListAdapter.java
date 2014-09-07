@@ -97,6 +97,7 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    final Event e = getItem(position);
 	    
 	    if ("org.matrix.demo.models.unity.stickman".equals(e.type)) {
+	    	textView.setVisibility(View.GONE);
 	    	if (UnityActivity.USER_ID.equals(e.user_id)) {
 	    		LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
 	    		lp.gravity = Gravity.RIGHT;
@@ -145,6 +146,7 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    	
 	    }
 	    else {
+	    	imageView.setVisibility(View.GONE);
 	    	if (UnityActivity.USER_ID.equals(e.user_id)) {
 	    		LayoutParams lp = (LayoutParams) textView.getLayoutParams();
 	    		lp.gravity = Gravity.RIGHT;
