@@ -1,3 +1,4 @@
 bin
 gen
+assets/*
 unity2android/unity-temp-dir
