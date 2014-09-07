@@ -1,5 +1,11 @@
 package org.matrix.techcrunch;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.unity3d.player.UnityPlayer;
 
 import android.app.Activity;
@@ -8,6 +14,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -17,12 +24,29 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 public class UnityActivity extends NativeActivity {
 	private static final String TAG = "UnityActivity";
 	public static final int REQ_CODE_ANIMATION = 2;
 	protected UnityPlayer mUnityPlayer;		// don't change the name of this variable; referenced from native code
+	private Handler mHandler;
+	private ListAdapter mAdapter;
+	
+	// list of all events
+	private List<UnityEvent> mEvents = new ArrayList<UnityEvent>();
+	
+	private Runnable mAddEventLoop = new Runnable() {
+
+		@Override
+		public void run() {
+			addEvent(new UnityEvent("{\"thumbnail\":\"http://9pixs.com/wp-content/uploads/2014/06/dog-pics_1404159465.jpg\"}"));
+			mHandler.postDelayed(this, 5000);
+		}
+		
+	};
 
 	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
@@ -30,13 +54,15 @@ public class UnityActivity extends NativeActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 
+		mHandler = new Handler();
 		getWindow().takeSurface(null);
 		getWindow().setFormat(PixelFormat.RGB_565);
 
 		loadUnity();
 		loadList();
 		
-		
+		// TODO listen on /events and dump the json into mEvents then call mAdapter.notifyDatasetChanged()
+		mHandler.postDelayed(mAddEventLoop, 2000);
 	}
 	
 	public void showUnity() {
@@ -76,6 +102,11 @@ public class UnityActivity extends NativeActivity {
         
 	}
 	
+	public void addEvent(UnityEvent event) {
+		mEvents.add(event);
+		mAdapter.add(event);
+	}
+	
 	public void loadList() {
 		setContentView(R.layout.main);
 		
@@ -87,6 +118,42 @@ public class UnityActivity extends NativeActivity {
 			}
 			
 		});
+		
+		findViewById(R.id.sendText).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String text = ((EditText)findViewById(R.id.editText)).getText().toString();
+				Log.i(TAG,"Sending "+text);
+				
+				// TODO send
+				JSONObject j = new JSONObject();
+				try {
+					j.put("body", text);
+				}
+				catch (JSONException e) {
+					Log.e(TAG, "Can't set body json: "+e);
+				}
+				
+				((EditText)findViewById(R.id.editText)).setText("");
+				addEvent(new UnityEvent(j.toString()));
+			}
+			
+		});
+		
+		ListView list = (ListView)findViewById(R.id.listView);
+		mAdapter = new ListAdapter(this);
+		for (UnityEvent e : mEvents) {
+			mAdapter.add(e);
+		}
+		list.setAdapter(mAdapter);
+		
+	}
+	
+	public void updateListIfVisible(UnityEvent event) {
+		if (mAdapter != null) {
+			mAdapter.add(event);
+		}
 	}
 
 	// Quit Unity
