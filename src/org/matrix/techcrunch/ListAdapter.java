@@ -90,10 +90,10 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    final ImageView imageView = (ImageView) rowView.findViewById(R.id.imageCell);
 	    
 	    final Event e = getItem(position);
-	    final UnityEvent event = new UnityEvent(e.content.toString());
 	    
-	    if (event.isAnimation()) {
-	    	Bitmap bm = sCache.get(event.getImageUri());
+	    if ("org.matrix.demo.models.unity.stickman".equals(e.type)) {
+	    	final String thumbnail = e.content.optString("thumbnail");
+	    	Bitmap bm = sCache.get(thumbnail);
 	    	if (bm != null) {
 	    		imageView.setImageBitmap(bm);
 	    	}
@@ -101,10 +101,10 @@ public class ListAdapter extends ArrayAdapter<Event> {
 		    	mOffThreadHandler.post(new Runnable() {
 		    		@Override
 		    		public void run() {
-		    			Log.i("BOO", "Loading image "+event.getImageUri());
+		    			Log.i("BOO", "Loading image "+thumbnail);
 		    			try {
-		    			    final Bitmap bitmap = getBitmapFromURL(event.getImageUri());
-		    			    sCache.put(event.getImageUri(), bitmap);
+		    			    final Bitmap bitmap = getBitmapFromURL(thumbnail);
+		    			    sCache.put(thumbnail, bitmap);
 		    			    mUiHandler.post(new Runnable() {
 		    			    	@Override
 		    			    	public void run() {
@@ -127,7 +127,7 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    		lp.gravity = Gravity.RIGHT;
 	    		textView.setLayoutParams(lp);
 	    	}
-	    	textView.setText(event.getText());
+	    	textView.setText(e.content.optString("body"));
 	    }
 	    
 	    
