@@ -43,7 +43,7 @@ public class UnityActivity extends NativeActivity {
 	private ListAdapter mAdapter;
 	private MatrixClient mClient;
 	public static final String USER_ID = "@tc:matrix.org";
-	private String mRoomId = "!hmGOAhRgWDatZmxzWr:matrix.org";
+	private String mRoomId = "!uiOIVeMtHcBRRjzyhh:matrix.org";
 	
 	// list of all events
 	private List<Event> mEvents = new ArrayList<Event>();
@@ -84,7 +84,7 @@ public class UnityActivity extends NativeActivity {
 		stream.start_stream();
 	}
 	
-	public void showUnity() {
+	public void showUnity(JSONObject replay) {
 		setContentView(R.layout.unity_send);
 		findViewById(R.id.sendMessage).setOnClickListener(new OnClickListener() {
 
@@ -92,6 +92,8 @@ public class UnityActivity extends NativeActivity {
 			public void onClick(View v) {
 				Log.i("AndroidTC", "Requesting unity event...");
 				UnityPlayer.UnitySendMessage("Robot", "getState", "");
+				hideUnity();
+				loadList();
 			}
 			
 		});
@@ -110,6 +112,10 @@ public class UnityActivity extends NativeActivity {
         LayoutParams lp = new LayoutParams (LayoutParams.FILL_PARENT, 700);
         layout.addView(mUnityPlayer.getView(), 0, lp);
 		mUnityPlayer.requestFocus();
+		
+		if (replay != null) {
+			UnityPlayer.UnitySendMessage("Robot", "setState", replay.toString());
+		}
 	}
 	
 	public void hideUnity() {
@@ -142,7 +148,7 @@ public class UnityActivity extends NativeActivity {
 
 			@Override
 			public void onClick(View v) {
-				showUnity();
+				showUnity(null);
 			}
 			
 		});

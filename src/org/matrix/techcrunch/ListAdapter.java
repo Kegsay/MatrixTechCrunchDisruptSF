@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.matrix.techcrunch.matrix.Event;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -45,9 +47,11 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	  private Looper mLooper;
 	  private Handler mOffThreadHandler;
 	  private Handler mUiHandler;
+	  private UnityActivity mActivity;
 	  
 	  public ListAdapter(Context context) {
 	    super(context, 0);
+	    this.mActivity = (UnityActivity)context;
 	    this.context = context;
 	    this.setNotifyOnChange(true);
 	    mUiHandler = new Handler();
@@ -101,6 +105,15 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    	Bitmap bm = sCache.get(thumbnail);
 	    	if (bm != null) {
 	    		imageView.setImageBitmap(bm);
+	    		imageView.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Log.d("ADAPTER", "Prepping to play animation.");
+						mActivity.showUnity(e.content);
+					}
+	    			
+	    		});
 	    	}
 	    	else {
 		    	mOffThreadHandler.post(new Runnable() {
