@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.matrix.techcrunch.matrix.Event;
 import org.matrix.techcrunch.matrix.EventStream;
 import org.matrix.techcrunch.matrix.EventStreamCallback;
+import org.matrix.techcrunch.matrix.MatrixClient;
+import org.matrix.techcrunch.matrix.SendEventCallback;
 
 import com.unity3d.player.UnityPlayer;
 
@@ -37,6 +39,8 @@ public class UnityActivity extends NativeActivity {
 	protected UnityPlayer mUnityPlayer;		// don't change the name of this variable; referenced from native code
 	private Handler mHandler;
 	private ListAdapter mAdapter;
+	private MatrixClient mClient;
+	private String mRoomId = "!hmGOAhRgWDatZmxzWr:matrix.org";
 	
 	// list of all events
 	private List<UnityEvent> mEvents = new ArrayList<UnityEvent>();
@@ -45,8 +49,12 @@ public class UnityActivity extends NativeActivity {
 
 		@Override
 		public void onEvent(Event event) {
-			Log.i(TAG, "onEvent "+event);
-			addEvent(new UnityEvent(event.content.toString()));
+			if (event.type.equals("m.room.message") || event.type.equals("org.matrix.demo.models.unity.stickman")) {
+				if (event.room_id.equals(mRoomId)) {
+					Log.i(TAG, "onEvent "+event);
+					addEvent(new UnityEvent(event.content.toString()));
+				}
+			}
 		}
 		
 	};
@@ -60,12 +68,15 @@ public class UnityActivity extends NativeActivity {
 		mHandler = new Handler();
 		getWindow().takeSurface(null);
 		getWindow().setFormat(PixelFormat.RGB_565);
+		
 
 		loadUnity();
+		// showUnity();
 		loadList();
 		
 		String host = "http://matrix.org";
 		String access_token = "QHRjOm1hdHJpeC5vcmc..enDGPyJfutxYykiszs";
+		mClient = new MatrixClient(host, access_token);
 		EventStream stream = new EventStream(host, access_token, mCallback);
 		stream.start_stream();
 	}
@@ -77,7 +88,7 @@ public class UnityActivity extends NativeActivity {
 			@Override
 			public void onClick(View v) {
 				Log.i("AndroidTC", "Requesting unity event...");
-				UnityPlayer.UnitySendMessage("Robot", "getState", null);
+				UnityPlayer.UnitySendMessage("Robot", "getState", "");
 			}
 			
 		});
@@ -110,6 +121,7 @@ public class UnityActivity extends NativeActivity {
 	public void addEvent(UnityEvent event) {
 		mEvents.add(event);
 		mAdapter.add(event);
+		mAdapter.notifyDataSetChanged();
 	}
 	
 	public void loadList() {
@@ -131,17 +143,32 @@ public class UnityActivity extends NativeActivity {
 				String text = ((EditText)findViewById(R.id.editText)).getText().toString();
 				Log.i(TAG,"Sending "+text);
 				
-				// TODO send
 				JSONObject j = new JSONObject();
 				try {
 					j.put("body", text);
+					j.put("msgtype", "m.text");
 				}
 				catch (JSONException e) {
 					Log.e(TAG, "Can't set body json: "+e);
 				}
+				mClient.sendContent(mRoomId, "m.room.message", j, new SendEventCallback() {
+
+					@Override
+					public void onResponse(int code, String response) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onException(Exception e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+				});
+				
 				
 				((EditText)findViewById(R.id.editText)).setText("");
-				addEvent(new UnityEvent(j.toString()));
 			}
 			
 		});

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,10 +64,15 @@ public class EventStream {
 		}
 		
 		if (code == 200) {
-			Log.i("test", "got response " + resp);
 			JSONObject json = new JSONObject(resp);
 			JSONArray rooms = json.getJSONArray("rooms");
+			Set<String> doneRooms = new HashSet<String>();
 			for (int j = 0; j < rooms.length(); ++j) {
+				String roomId = rooms.getJSONObject(j).getString("room_id");
+				if (doneRooms.contains(roomId)) {
+					continue;
+				}
+				doneRooms.add(roomId);
 				JSONArray chunks = rooms.getJSONObject(j).getJSONObject("messages").getJSONArray("chunk");
 				for (int i = 0; i < chunks.length(); ++i) {
 					try {
@@ -75,6 +82,7 @@ public class EventStream {
 				}
 			}
 			this.end_token = json.getString("end");
+			Log.i("EventStream", "initialSync end token="+this.end_token);
 		} else {
 			Log.e("test", "got response code: " + code);
 		}
