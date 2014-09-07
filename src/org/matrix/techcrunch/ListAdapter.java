@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+
+import org.json.JSONObject;
+import org.matrix.techcrunch.matrix.Event;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,6 +20,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ListAdapter extends ArrayAdapter<UnityEvent> {
+public class ListAdapter extends ArrayAdapter<Event> {
 	
 	final static int cacheSize = 4 * 1024 * 1024;
 	private static LruCache<String, Bitmap> sCache = new LruCache<String, Bitmap>(cacheSize) {
@@ -51,10 +56,10 @@ public class ListAdapter extends ArrayAdapter<UnityEvent> {
 	    mOffThreadHandler = new Handler(mLooper);
 	  }
 	  
-	  public void setEvents(List<UnityEvent> events) {
+	  public void setEvents(List<Event> events) {
 		  Log.e("Adapter", "setEvents");
 		  this.clear();
-		  for (UnityEvent e : events) {
+		  for (Event e : events) {
 			  this.add(e);
 		  }
 		  this.notifyDataSetChanged();
@@ -83,7 +88,8 @@ public class ListAdapter extends ArrayAdapter<UnityEvent> {
 	    final TextView textView = (TextView) rowView.findViewById(R.id.textCell);
 	    final ImageView imageView = (ImageView) rowView.findViewById(R.id.imageCell);
 	    
-	    final UnityEvent event = getItem(position);
+	    final Event e = getItem(position);
+	    final UnityEvent event = new UnityEvent(e.content.toString());
 	    
 	    if (event.isAnimation()) {
 	    	Bitmap bm = sCache.get(event.getImageUri());
@@ -115,6 +121,9 @@ public class ListAdapter extends ArrayAdapter<UnityEvent> {
 	    	
 	    }
 	    else {
+	    	if (UnityActivity.USER_ID.equals(e.user_id)) {
+	    		textView.setGravity(Gravity.RIGHT);
+	    	}
 	    	textView.setText(event.getText());
 	    }
 	    

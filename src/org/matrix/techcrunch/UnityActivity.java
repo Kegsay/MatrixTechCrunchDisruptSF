@@ -40,10 +40,11 @@ public class UnityActivity extends NativeActivity {
 	private Handler mHandler;
 	private ListAdapter mAdapter;
 	private MatrixClient mClient;
+	public static final String USER_ID = "@tc:matrix.org";
 	private String mRoomId = "!hmGOAhRgWDatZmxzWr:matrix.org";
 	
 	// list of all events
-	private List<UnityEvent> mEvents = new ArrayList<UnityEvent>();
+	private List<Event> mEvents = new ArrayList<Event>();
 	
 	private EventStreamCallback mCallback = new EventStreamCallback() {
 
@@ -52,7 +53,7 @@ public class UnityActivity extends NativeActivity {
 			if (event.type.equals("m.room.message") || event.type.equals("org.matrix.demo.models.unity.stickman")) {
 				if (event.room_id.equals(mRoomId)) {
 					Log.i(TAG, "onEvent "+event);
-					addEvent(new UnityEvent(event.content.toString()));
+					addEvent(event);
 				}
 			}
 		}
@@ -118,10 +119,18 @@ public class UnityActivity extends NativeActivity {
         
 	}
 	
-	public void addEvent(UnityEvent event) {
+	public void addEvent(final Event event) {
 		mEvents.add(event);
-		mAdapter.add(event);
-		mAdapter.notifyDataSetChanged();
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				mAdapter.add(event);
+				mAdapter.notifyDataSetChanged();
+			}
+			
+		});
+		
 	}
 	
 	public void loadList() {
@@ -175,17 +184,11 @@ public class UnityActivity extends NativeActivity {
 		
 		ListView list = (ListView)findViewById(R.id.listView);
 		mAdapter = new ListAdapter(this);
-		for (UnityEvent e : mEvents) {
+		for (Event e : mEvents) {
 			mAdapter.add(e);
 		}
 		list.setAdapter(mAdapter);
 		
-	}
-	
-	public void updateListIfVisible(UnityEvent event) {
-		if (mAdapter != null) {
-			mAdapter.add(event);
-		}
 	}
 	
 	// Called by unity
