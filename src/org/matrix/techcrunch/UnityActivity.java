@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.NativeActivity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +77,7 @@ public class UnityActivity extends NativeActivity {
 		mHandler = new Handler();
 		getWindow().takeSurface(null);
 		getWindow().setFormat(PixelFormat.RGB_565);
+		getWindow().getDecorView().setBackgroundColor(Color.GRAY);
 		
 
 		loadUnity();
@@ -203,6 +205,8 @@ public class UnityActivity extends NativeActivity {
 			mAdapter.add(e);
 		}
 		list.setAdapter(mAdapter);
+		
+		list.setSelection(list.getCount()-1);
 		
 	}
 	
