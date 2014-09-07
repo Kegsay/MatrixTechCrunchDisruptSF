@@ -195,34 +195,13 @@ public class UnityActivity extends NativeActivity {
 	// Called by unity
 	public void onReceiveUnityJson(String json) {
 		Log.d(TAG, "onReceiveUnityJson "+json);
-		// upload the image
-		try {
-			final JSONObject j = new JSONObject(json);
-			mClient.doUpload(new FileInputStream(j.optString("thumbnail")), "image/png", new UploadCallback() {
-
-				@Override
-				public void onFinished(String url) {
-					try {
-						j.putOpt("thumbnail", url);
-						sendUnityJson(j);
-					}
-					catch (JSONException e) {
-						Log.e(TAG, "I hate my life: "+e);
-					}
-				}
-
-				@Override
-				public void onException(Exception e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-			});
-		
-			
+		try {	
+			JSONObject j = new JSONObject(json);
+			j.putOpt("thumbnail", "http://matrix.org:8080/_matrix/content/QGtlZ2FuOm1hdHJpeC5vcmcvNupjfhmFhjxDPquSZGaGlYj.aW1hZ2UvcG5n.png");
+			sendUnityJson(j);
 		}
-		catch (Exception e) {
-			Log.e(TAG, "Wrrry: "+e);
+		catch (JSONException e) {
+			Log.e(TAG, "Matthew screwed up the json: "+e);
 		}
 	}
 	

@@ -92,6 +92,11 @@ public class ListAdapter extends ArrayAdapter<Event> {
 	    final Event e = getItem(position);
 	    
 	    if ("org.matrix.demo.models.unity.stickman".equals(e.type)) {
+	    	if (UnityActivity.USER_ID.equals(e.user_id)) {
+	    		LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
+	    		lp.gravity = Gravity.RIGHT;
+	    		imageView.setLayoutParams(lp);
+	    	}
 	    	final String thumbnail = e.content.optString("thumbnail");
 	    	Bitmap bm = sCache.get(thumbnail);
 	    	if (bm != null) {
